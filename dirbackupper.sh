@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#title			:dirbackupper.sh
+#title		:dirbackupper.sh
 #description	:This script backups files from target dir to backup_targetdir and keeps a record to targetdir_log.txt file
-#author			:mityakuznetsoff@gmail.com
-#date			:20180125
-#version		:1.0
-#usage			:dirbackupper.sh {target dir path} {backup dir path}"
-#notes			:
+#author		:mityakuznetsoff@gmail.com
+#date		:20180125
+#version	:1.0
+#usage		:dirbackupper.sh {target dir path} {backup dir path}"
+#notes		:
 #bash_version	:4.3.11(1)-release
 
 targetDir=$1
@@ -47,7 +47,18 @@ mv .deletedFiles.tmp .deletedFiles.txt
 awk -v date="$(date +"%Y-%m-%d %r")" '{print $1,"\tdeleted\t" date}' .deletedFiles.txt >> dirbackupper.log
 cat .deletedFiles.txt >> .deletedFilesArchive.txt
 
-#Step 3
 #get a lists of new files
+comm -23 .targetDirFilelist.txt .backupDirFilelist.txt > .createdFiles.txt
+awk -v date="$(date +"%Y-%m-%d %r")" '{print $1,"\tcreated\t" date}' .createdFiles.txt >> dirbackupper.log
+
+cat .createdFiles.txt | while read line
+do
+	cp ${targetDir}/${line} ${backupDir}
+done
+
+#delete auxiliary files
+rm .targetDirFilelist.txt
+rm .backupDirFilelist.txt
+rm .deletedFiles.txt
 
 cd $OLDPWD
