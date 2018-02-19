@@ -29,6 +29,7 @@ fi
 
 touch .targetDirFilelist.txt
 touch .backupDirFilelist.txt
+touch .deletedFilesArchive.txt
 
 #get a list of files of target and backup directories
 cd ${targetDir}
@@ -39,8 +40,12 @@ cd ${backupDir}
 find . -maxdepth 1 -type f -printf '%f\n' | sort > $OLDPWD/.backupDirFilelist.txt
 cd $OLDPWD
 
-#Step 2
 #get a lists of deleted files
+comm -23  .backupDirFilelist.txt .targetDirFilelist.txt | sort > .deletedFiles.txt
+comm -23  .deletedFiles.txt .deletedFilesArchive.txt > .deletedFiles.tmp
+mv .deletedFiles.tmp .deletedFiles.txt
+awk -v date="$(date +"%Y-%m-%d %r")" '{print $1,"\tdeleted\t" date}' .deletedFiles.txt >> dirbackupper.log
+cat .deletedFiles.txt >> .deletedFilesArchive.txt
 
 #Step 3
 #get a lists of new files
