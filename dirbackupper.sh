@@ -30,8 +30,14 @@ fi
 touch .targetDirFilelist.txt
 touch .backupDirFilelist.txt
 
-#Step 1
 #get a list of files of target and backup directories
+cd ${targetDir}
+find . -maxdepth 1 -type f -printf '%f\n' | sort > $OLDPWD/.targetDirFilelist.txt
+cd $OLDPWD
+
+cd ${backupDir}
+find . -maxdepth 1 -type f -printf '%f\n' | sort > $OLDPWD/.backupDirFilelist.txt
+cd $OLDPWD
 
 #Step 2
 #get a lists of deleted files
